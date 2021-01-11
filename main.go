@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/mico/handlers"
 )
 
@@ -18,8 +19,12 @@ func main() {
 	//handlers
 	ph := handlers.NewProducts(l)
 
-	sm := http.NewServeMux()
-	sm.Handle("/", ph)
+	sm := mux.NewRouter()
+	getRoutes := sm.Methods("GET").Subrouter()
+	getRoutes.HandleFunc("/products", ph.GetProducts)
+
+	putRoutes := sm.Methods(http.MethodPut).Subrouter()
+	putRoutes.HandleFunc("/{id:[0-9]+}", ph.UpdateProduct)
 
 	server := http.Server{
 		Addr:         ":9000",
