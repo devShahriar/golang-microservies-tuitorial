@@ -14,10 +14,12 @@ import (
 func main() {
 
 	l := log.New(os.Stdout, "api", log.LstdFlags)
-	handler := handlers.NewRouter(l)
+
+	//handlers
+	ph := handlers.NewProducts(l)
 
 	sm := http.NewServeMux()
-	sm.Handle("/", handler)
+	sm.Handle("/", ph)
 
 	server := http.Server{
 		Addr:         ":9000",
@@ -33,6 +35,7 @@ func main() {
 			l.Fatal(err)
 		}
 	}()
+
 	sigChan := make(chan os.Signal)
 	signal.Notify(sigChan, os.Interrupt)
 	signal.Notify(sigChan, os.Kill)
