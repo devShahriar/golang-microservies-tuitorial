@@ -1,13 +1,14 @@
-package handlers
+package main
 
 import (
 	"fmt"
 	"path/filepath"
 	"reflect"
+	"strings"
 )
 
 type User struct {
-	name string `key:"shudip"`
+	name string `validate:"shudip"`
 	id   int    `keyValidate:"goru"`
 }
 
@@ -18,7 +19,8 @@ func main() {
 	}
 
 	fi, _ := reflect.TypeOf(u).Elem().FieldByName("name")
-	fmt.Println(string(fi.Tag))
+	a := strings.Split(string(fi.Tag), ":")
+	fmt.Println(a)
 	path, _ := filepath.Abs("test.go")
 
 	fmt.Println(filepath.Join("/data/product-db.go", path))
