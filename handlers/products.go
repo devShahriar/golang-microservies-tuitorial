@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"strconv"
@@ -29,32 +30,42 @@ func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 
 func (p *Products) AddProduct(w http.ResponseWriter, r *http.Request) {
 
-	prod := &data.Product{}
-	err := prod.FromJson(r.Body)
-
-	if err != nil {
-		http.Error(w, "unable to parse", http.StatusInternalServerError)
-	}
-	p.l.Printf("Prod %#v", prod)
+	prod := r.Context().Value(KeyProduct{}).(*data.Product)
 	data.AddProduct(prod)
 }
 
 func (p *Products) UpdateProduct(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+	vars := mux.Vars(r) // ret
 	id, _ := strconv.Atoi(vars["id"])
-	prod := &data.Product{}
-	err := prod.FromJson(r.Body)
-
-	if err != nil {
-		http.Error(w, "unable to parse", http.StatusInternalServerError)
-	}
-	err = data.UpdateProduct(id, prod)
+	prod := r.Context().Value(KeyProduct{}).(*data.Product)
+	err := data.UpdateProduct(id, prod)
 	if err == data.ErrProduct {
 		http.Error(w, "unable to find the product ", http.StatusBadRequest)
+		return
 	}
 	if err != nil {
 		http.Error(w, "Product not found", http.StatusInternalServerError)
 		return
 	}
+
+}
+
+type KeyProduct struct{}
+
+func (p *Products) Middleware(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		prod := &data.Product{}
+		err := prod.FromJson(r.Body)
+
+		if err != nil {
+			http.Error(w, "unable to parse", http.StatusInternalServerError)
+			return
+		}
+		ctx := context.WithValue(r.Context(), KeyProduct{}, prod)
+		p.l.Println(ctx.Value(KeyProduct{}))
+		req := r.WithContext(ctx)
+		next.ServeHTTP(w, req)
+	})
 
 }
