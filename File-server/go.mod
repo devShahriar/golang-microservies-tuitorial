@@ -1,4 +1,4 @@
-module github.com/Shahriar-shudip/golang-microservies-tuitorial/tree/main/File-server
+module github.com/Shahriar-shudip/golang-microservies-tuitorial/File-server
 
 go 1.14
 

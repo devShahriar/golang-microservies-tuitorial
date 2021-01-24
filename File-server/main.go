@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/Shahriar-shudip/golang-microservies-tuitorial/File-server/fileStore"
+	"github.com/Shahriar-shudip/golang-microservies-tuitorial/File-server/handlers"
 	goCros "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
@@ -15,13 +17,18 @@ import (
 func main() {
 	l := log.New(os.Stdout, "api", log.LstdFlags)
 
-	fileHandler := NewFile()
+	localStorage, _ := fileStore.NewLocal("imageStore", 1024*1000*5)
+	fileHandler := handlers.NewFile(localStorage, l)
 
 	sm := mux.NewRouter()
 	ch := goCros.CORS(goCros.AllowedOrigins([]string{"*"}))
+
+	uploadFile := sm.Methods(http.MethodPost).Subrouter()
+	uploadFile.HandleFunc("/images/{id:[0-9]+}/{filename:[a-zA-Z]+\\.[a-z]{3}}", fileHandler.UploadRest)
+
 	server := http.Server{
 		Addr:         ":9001",
-		Handler:      ch(sm),
+		Handler:      ch(sm), //to allow corsorigin
 		IdleTimeout:  123 * time.Second,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
