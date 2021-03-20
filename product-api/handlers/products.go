@@ -47,7 +47,6 @@ func (p *Products) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Product not found", http.StatusInternalServerError)
 		return
 	}
-
 }
 
 type KeyProduct struct{}

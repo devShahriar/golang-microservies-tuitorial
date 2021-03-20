@@ -50,7 +50,7 @@ class Admin extends React.Component {
 
         // upload the file
         axios.post(
-            window.global.files_location, 
+            "http://localhost:9001", 
             data, 
             {'content-type': `multipart/form-data; boundary=${data._boundary}`})
         .then(res => {
