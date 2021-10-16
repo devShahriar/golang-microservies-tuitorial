@@ -23,7 +23,7 @@ func NewLocal(b string, size int) (*Local, error) {
 func (l *Local) Save(path string, content io.Reader) error {
 	//start := time.Now()
 	//adds with the basepath+pathoffile
-	fp := l.fullpath(path)
+	fp := l.Fullpath(path)
 
 	d := filepath.Dir(fp) //return the whole path excluding the last element or file name
 	fmt.Println(fp)
