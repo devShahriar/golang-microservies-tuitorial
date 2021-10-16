@@ -43,7 +43,7 @@ func (l *Local) Save(path string, content io.Reader) error {
 	return nil
 }
 
-func (l *Local) fullpath(path string) string {
+func (l *Local) Fullpath(path string) string {
 
 	return filepath.Join(l.basePath, path)
 }
